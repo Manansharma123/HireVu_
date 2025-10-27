@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interview Simulator</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Main container and form styles */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+            border-radius: 2px;
+        }
+
+        /* User Details Section */
+        #user-details-form {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            border: 2px dashed #e0e0e0;
+        }
+
+        #user-details-form:hover {
+            border-color: #3498db;
+            background: #f0f7ff;
+        }
+
+        .user-details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .user-details-grid input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .user-details-grid input:hover {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .user-details-grid input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        #upload-form {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            border: 2px dashed #e0e0e0;
+        }
+
+        #upload-form:hover {
+            border-color: #3498db;
+            background: #f0f7ff;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #34495e;
+            transition: all 0.3s ease;
+        }
+
+        #resume {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        #resume:hover {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        #resume:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        #start-interview-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #start-interview-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #2980b9, #8e44ad);
+        }
+
+        #start-interview-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #status-indicator {
+            text-align: center;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .status-idle {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+
+        /* Face Capture Section */
+        #face-capture-container {
+            display: none;
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .capture-video-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        #capture-video {
+            width: 400px;
+            height: 300px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 3px solid #3498db;
+        }
+
+        .capture-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .capture-controls button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #capture-photo-btn {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+        }
+
+        #retake-photo-btn {
+            background: #f39c12;
+            color: white;
+        }
+
+        #proceed-interview-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .capture-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .captured-photo-preview {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        #captured-photo {
+            width: 200px;
+            height: 150px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 3px solid #27ae60;
+        }
+
+        /* Team Interview Layout */
+        .interview-layout {
+            display: flex;
+            height: 80vh;
+            gap: 20px;
+            background: #f5f6fa;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Left side - Chat interface */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 15px 0 0 15px;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-header-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .chat-header-info h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .chat-header-info p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .message.interviewer .message-avatar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .message.interviewer .message-content {
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 20px 20px 20px 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px 20px 5px 20px;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+
+        /* Input area */
+        .chat-input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e1e8ed;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .input-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #user-text-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 25px;
+            font-size: 1rem;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+
+        #user-text-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        #send-text-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        #send-text-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #record-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        #record-btn:hover {
+            transform: scale(1.1);
+            background: #c0392b;
+        }
+
+        #record-btn.recording {
+            animation: recordingPulse 1.5s infinite;
+        }
+
+        @keyframes recordingPulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+        /* Right side - Proctoring panel */
+        .proctoring-panel {
+            width: 350px;
+            background: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0 15px 15px 0;
+        }
+
+        .proctoring-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .proctoring-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .proctoring-status {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            font-size: 0.85rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-value {
+            font-weight: bold;
+        }
+
+        .status-value.good {
+            color: #2ecc71;
+        }
+
+        .status-value.warning {
+            color: #f39c12;
+        }
+
+        .status-value.danger {
+            color: #e74c3c;
+        }
+
+        /* Camera container */
+        .camera-container {
+            flex: 1;
+            position: relative;
+            background: #000;
+            border-radius: 10px;
+            margin: 20px;
+            overflow: hidden;
+        }
+
+        #student-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #face-canvas {
+            display: none;
+        }
+
+        /* Proctoring overlay */
+        .proctoring-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .violation-warning {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(231, 76, 60, 0.95);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+            animation: warningPulse 1s infinite;
+        }
+
+        .violation-warning.show {
+            display: block;
+        }
+
+        @keyframes warningPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .camera-container.violation {
+            animation: cameraViolation 2s ease-out;
+        }
+
+        @keyframes cameraViolation {
+            0% { border: 3px solid transparent; }
+            50% { border: 3px solid #e74c3c; }
+            100% { border: 3px solid transparent; }
+        }
+
+        /* Progress steps */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            padding: 0;
+            list-style: none;
+        }
+
+        .progress-step {
+            position: relative;
+            padding: 10px 20px;
+            background: #e0e0e0;
+            margin: 0 5px;
+            border-radius: 5px;
+            color: #666;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .progress-step.active {
+            background: #3498db;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #user-details-form, #upload-form {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        /* File preview */
+        .file-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8f4fd;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .file-preview.show {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+            color: #3498db;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .file-size {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .interview-layout {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .proctoring-panel {
+                width: 100%;
+                order: -1;
+                max-height: 300px;
+            }
+            
+            .camera-container {
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            
+            #capture-video {
+                width: 300px;
+                height: 225px;
+            }
+
+            .capture-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .user-details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .progress-step {
+                margin: 5px 0;
+                width: 200px;
+                text-align: center;
+            }
+
+            .chat-input-area {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .input-actions {
+                justify-content: center;
+            }
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Success indicators */
+        .success-check {
+            color: #28a745;
+            font-size: 1.2em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Interview Simulator</h1>
+        
+        <!-- Progress Indicator -->
+        <ul class="progress-steps" id="progress-steps">
+            <li class="progress-step active" id="step-1">📝 Personal Info</li>
+            <li class="progress-step" id="step-2">📄 Resume Upload</li>
+            <li class="progress-step" id="step-3">📸 Face Verification</li>
+            <li class="progress-step" id="step-4">🎯 Interview</li>
+        </ul>
+        
+        <!-- User Details Form -->
+        <form id="user-details-form">
+            <h3 style="margin-bottom: 1rem; color: #2c3e50;">📝 Personal Information</h3>
+            <div class="user-details-grid">
+                <input type="text" id="user-name" name="name" placeholder="Full Name *" required>
+                <input type="tel" id="user-phone" name="phone" placeholder="Phone Number *" required>
+                <input type="email" id="user-email" name="email" placeholder="Email Address *" required>
+            </div>
+        </form>
+
+        <!-- Resume Upload Form -->
+        <form id="upload-form">
+            <div class="form-group">
+                <label for="resume">📄 Upload Your Resume (PDF):</label>
+                <input type="file" id="resume" name="resume" accept=".pdf" required multiple>
+                <div id="file-preview" class="file-preview">
+                    <div class="file-info">
+                        <span class="file-icon">📄</span>
+                        <div>
+                            <div class="file-name" id="display-filename">No file selected</div>
+                            <div class="file-size" id="display-filesize"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" id="start-interview-btn" class="btn-primary">Continue to Face Verification</button>
+        </form>
+
+        <!-- Face Capture Section -->
+        <div id="face-capture-container">
+            <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">📸 Face Verification</h2>
+            <p style="margin-bottom: 1.5rem; color: #666;">Please capture a clear photo of your face for identity verification during the interview.</p>
+            
+            <div class="capture-video-container">
+                <video id="capture-video" autoplay muted></video>
+                <canvas id="capture-canvas" style="display: none;"></canvas>
+            </div>
+            
+            <div class="captured-photo-preview">
+                <h3>Preview:</h3>
+                <img id="captured-photo" alt="Captured photo">
+            </div>
+            
+            <div class="capture-controls">
+                <button type="button" id="capture-photo-btn">📷 Capture Photo</button>
+                <button type="button" id="retake-photo-btn" style="display: none;">🔄 Retake</button>
+                <button type="button" id="proceed-interview-btn" style="display: none;">✅ Start Interview</button>
+            </div>
+        </div>
+        
+        <div id="status-indicator" class="status-idle">Ready to start</div>
+        
+        <!-- Team Interview Interface -->
+        <div id="interview-container" style="display: none;">
+            <div class="interview-layout">
+                <!-- Left side - Chat Interface -->
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="chat-header-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="chat-header-info">
+                            <h3>Team Interview Session</h3>
+                            <p>Live interview with proctoring enabled</p>
+                        </div>
+                    </div>
+                    
+                    <div class="messages-container" id="messages-container">
+                        <!-- Messages will be added here dynamically -->
+                    </div>
+                    
+                    <div class="chat-input-area">
+                        <div class="input-container">
+                            <input type="text" id="user-text-input" placeholder="Type your response..." maxlength="500">
+                        </div>
+                        <div class="input-actions">
+                            <button id="send-text-btn" title="Send message">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                            <button id="record-btn" title="Voice recording">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right side - Proctoring Panel -->
+                <div class="proctoring-panel">
+                    <div class="proctoring-header">
+                        <h3><i class="fas fa-shield-alt"></i> Proctoring System</h3>
+                    </div>
+                    
+                    <div class="proctoring-status">
+                        <div class="status-item">
+                            <span>Session Status:</span>
+                            <span class="status-value good" id="session-status">ACTIVE</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Warnings:</span>
+                            <span class="status-value good" id="warning-count">0/3</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Gaze Direction:</span>
+                            <span class="status-value good" id="gaze-direction">CENTER</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Face Count:</span>
+                            <span class="status-value good" id="face-count">1</span>
+                        </div>
+                    </div>
+                    
+                    <div class="camera-container">
+                        <video id="student-video" autoplay muted></video>
+                        <canvas id="face-canvas"></canvas>
+                        
+                        <div class="proctoring-overlay">
+                            <div class="violation-warning" id="violation-warning">
+                                <div id="warning-message"></div>
+                                <div id="warning-timer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <audio id="audio-player" controls style="display: none;"></audio>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+    <script src="/static/js/interview.js"></script>
+    <script>
+        // File preview and form validation functions
+        document.getElementById('resume').addEventListener('change', function(e) {
+            const filePreview = document.getElementById('file-preview');
+            const fileNameDisplay = document.getElementById('display-filename');
+            const fileSizeDisplay = document.getElementById('display-filesize');
+            
+            if (this.files && this.files.length > 0) {
+                const file = this.files[0];
+                fileNameDisplay.textContent = file.name;
+                fileSizeDisplay.textContent = formatFileSize(file.size);
+                filePreview.classList.add('show');
+                updateProgress(3);
+                document.getElementById('step-2').innerHTML = '✅ Resume Upload';
+                
+                filePreview.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    filePreview.style.transform = 'scale(1)';
+                }, 100);
+            } else {
+                filePreview.classList.remove('show');
+                updateProgress(2);
+                document.getElementById('step-2').innerHTML = '📄 Resume Upload';
+            }
+        });
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function validateUserDetails() {
+            const name = document.getElementById('user-name').value.trim();
+            const phone = document.getElementById('user-phone').value.trim();
+            const email = document.getElementById('user-email').value.trim();
+            
+            if (!name || !phone || !email) {
+                showValidationError('Please fill in all personal information fields.');
+                return false;
+            }
+            
+            if (name.length < 2) {
+                showValidationError('Please enter a valid name (at least 2 characters).');
+                return false;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showValidationError('Please enter a valid email address.');
+                return false;
+            }
+            
+            const phoneRegex = /^[\+]?[\s\-\(\)0-9]{10,}$/;
+            if (!phoneRegex.test(phone)) {
+                showValidationError('Please enter a valid phone number (at least 10 digits).');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function showValidationError(message) {
+            let errorDiv = document.getElementById('validation-error');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'validation-error';
+                errorDiv.style.cssText = `
+                    background: #f8d7da;
+                    color: #721c24;
+                    padding: 12px;
+                    border-radius: 6px;
+                    margin: 10px 0;
+                    border: 1px solid #f5c6cb;
+                    animation: shake 0.5s ease-in-out;
+                `;
+                document.getElementById('user-details-form').appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-5px); }
+                    75% { transform: translateX(5px); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            setTimeout(() => {
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function removeValidationError() {
+            const errorDiv = document.getElementById('validation-error');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+
+        function updateProgress(currentStep) {
+            const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
+            
+            steps.forEach((stepId, index) => {
+                const stepElement = document.getElementById(stepId);
+                if (index < currentStep - 1) {
+                    stepElement.className = 'progress-step completed';
+                } else if (index === currentStep - 1) {
+                    stepElement.className = 'progress-step active';
+                } else {
+                    stepElement.className = 'progress-step';
+                }
+            });
+        }
+
+        function checkPersonalInfoComplete() {
+            const name = document.getElementById('user-name').value.trim();
+            const phone = document.getElementById('user-phone').value.trim();
+            const email = document.getElementById('user-email').value.trim();
+            
+            if (name && phone && email && validateUserDetails()) {
+                updateProgress(2);
+                document.getElementById('step-1').innerHTML = '✅ Personal Info';
+            }
+        }
+
+        ['user-name', 'user-email', 'user-phone'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                removeValidationError();
+                setTimeout(checkPersonalInfoComplete, 500);
+            });
+        });
+
+        document.getElementById('start-interview-btn').addEventListener('click', function() {
+            if (validateUserDetails()) {
+                app.startInterview();
+            }
+        });
+
+        // Chat message creation functions
+        function addMessage(content, isUser = false, timestamp = null) {
+            const messagesContainer = document.getElementById('messages-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'interviewer'}`;
+            
+            const now = timestamp ? new Date(timestamp) : new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">
+                    ${isUser ? 'ME' : 'HR'}
+                </div>
+                <div class="message-content">
+                    ${content}
+                    <div class="message-time">${timeString}</div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function updateProctoringStatus(data) {
+            if (data.session_active !== undefined) {
+                const sessionStatus = document.getElementById('session-status');
+                sessionStatus.textContent = data.session_active ? 'ACTIVE' : 'INACTIVE';
+                sessionStatus.className = `status-value ${data.session_active ? 'good' : 'danger'}`;
+            }
+            
+            if (data.violation_count !== undefined && data.max_violations !== undefined) {
+                const warningCount = document.getElementById('warning-count');
+                warningCount.textContent = `${data.violation_count}/${data.max_violations}`;
+                warningCount.className = `status-value ${data.violation_count === 0 ? 'good' : 
+                    data.violation_count < data.max_violations ? 'warning' : 'danger'}`;
+            }
+            
+            if (data.gaze_direction) {
+                const gazeDirection = document.getElementById('gaze-direction');
+                gazeDirection.textContent = data.gaze_direction;
+                gazeDirection.className = `status-value ${data.gaze_direction === 'CENTER' ? 'good' : 'warning'}`;
+            }
+            
+            if (data.face_count !== undefined) {
+                const faceCount = document.getElementById('face-count');
+                faceCount.textContent = data.face_count;
+                faceCount.className = `status-value ${data.face_count === 1 ? 'good' : 'danger'}`;
+            }
+        }
+
+        function showViolationWarning(violation) {
+            const warningDiv = document.getElementById('violation-warning');
+            const messageDiv = document.getElementById('warning-message');
+            const timerDiv = document.getElementById('warning-timer');
+            const cameraContainer = document.querySelector('.camera-container');
+            
+            messageDiv.textContent = violation.message || 'Proctoring violation detected';
+            timerDiv.textContent = violation.timer || '';
+            
+            warningDiv.classList.add('show');
+            cameraContainer.classList.add('violation');
+            
+            setTimeout(() => {
+                if (violation.type !== 'violation') {
+                    warningDiv.classList.remove('show');
+                }
+                cameraContainer.classList.remove('violation');
+            }, 3000);
+        }
+
+        // Global app object for interview functionality
+        window.app = {
+            startInterview: function() {
+                if (validateUserDetails()) {
+                    const faceCapture = document.getElementById('face-capture-container');
+                    faceCapture.style.display = 'block';
+                    updateProgress(3);
+                    document.getElementById('step-3').innerHTML = '📸 Face Verification';
+                    this.initializeFaceCapture();
+                }
+            },
+            
+            initializeFaceCapture: function() {
+                // Face capture functionality will be handled by interview.js
+                console.log('Initializing face capture...');
+            }
+        };
+    </script>
+</body>
+</html>

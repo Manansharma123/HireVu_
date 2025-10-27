@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📄 Smart ATS Tracker - AI Interview System</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #34495e;
+            font-size: 1.1rem;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type=file] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 1rem;
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            text-align: center;
+            background: #f0f7ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            background: #e3f2fd;
+            border-color: #2980b9;
+        }
+
+        .file-upload-label i {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .analyze-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .results-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 2rem;
+            border-left: 4px solid #27ae60;
+        }
+
+        .results-card.error {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+
+        .match-score {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .match-score .score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 0.5rem;
+        }
+
+        .match-score .label {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .keywords-section {
+            margin-bottom: 2rem;
+        }
+
+        .keywords-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .keyword-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .keyword-tag {
+            background: #e74c3c;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .summary-section {
+            margin-top: 2rem;
+        }
+
+        .summary-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .summary-text {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        .navigation a {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 0 10px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .nav-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .navigation a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-btn {
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .dropdown-arrow {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            margin-top: 5px;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .dropdown-item {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #3498db;
+        }
+        
+        .item-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>📄 Smart ATS Tracker</h1>
+                    <p>Upload your resume and paste a job description to get an ATS match score.</p>
+                </div>
+                
+                <!-- Dropdown Menu -->
+                <div class="dropdown">
+                    <button class="dropdown-btn" onclick="toggleDropdown()">
+                        <span>📋 Services</span>
+                        <i class="dropdown-arrow">▼</i>
+                    </button>
+                    <div class="dropdown-content" id="dropdown-content">
+                        <a href="/" class="dropdown-item">
+                            <span>Interview</span>
+                        </a>
+                        <a href="/ats" class="dropdown-item">
+                            <span>ATS Tracker</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form id="ats-form" class="form-section">
+            <div class="form-group">
+                <label for="job-description">📝 Job Description</label>
+                <textarea 
+                    id="job-description" 
+                    name="job_description" 
+                    placeholder="Paste the job description here..."
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="resume-file">📂 Upload Your Resume (PDF)</label>
+                <div class="file-upload">
+                    <input type="file" id="resume-file" name="resume" accept=".pdf" required>
+                    <label for="resume-file" class="file-upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <div>Click to upload PDF resume</div>
+                        <div style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                            Supported format: PDF only
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="analyze-btn" id="analyze-btn">
+                🔍 Analyze Resume
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing your resume against the job description...</p>
+        </div>
+
+        <div class="results-section" id="results-section">
+            <div class="results-card" id="results-card">
+                <div class="match-score" id="match-score-section">
+                    <div class="score" id="match-score">--</div>
+                    <div class="label">ATS Match Score</div>
+                </div>
+
+                <div class="keywords-section" id="keywords-section">
+                    <h3>❌ Missing Keywords</h3>
+                    <div class="keyword-tags" id="keyword-tags">
+                        <!-- Keywords will be populated here -->
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>📊 Profile Summary</h3>
+                    <div class="summary-text" id="profile-summary">
+                        <!-- Summary will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <!-- Navigation removed - using dropdown instead -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('ats-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const jobDescription = document.getElementById('job-description').value.trim();
+            const resumeFile = document.getElementById('resume-file').files[0];
+            
+            if (!jobDescription) {
+                alert('Please enter a job description.');
+                return;
+            }
+            
+            if (!resumeFile) {
+                alert('Please upload a PDF resume.');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results-section').style.display = 'none';
+            document.getElementById('analyze-btn').disabled = true;
+            document.getElementById('analyze-btn').textContent = '🔄 Analyzing...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('job_description', jobDescription);
+                formData.append('resume', resumeFile);
+                
+                const response = await fetch('/ats/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                if (result.success) {
+                    showResults(result);
+                } else {
+                    showError(result.error_message || 'Analysis failed');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                showError('Network error occurred. Please try again.');
+            }
+            
+            // Reset button
+            document.getElementById('analyze-btn').disabled = false;
+            document.getElementById('analyze-btn').textContent = '🔍 Analyze Resume';
+        });
+        
+        function showResults(result) {
+            const resultsCard = document.getElementById('results-card');
+            resultsCard.className = 'results-card';
+            
+            // Update match score
+            document.getElementById('match-score').textContent = result.jd_match;
+            
+            // Update keywords
+            const keywordTags = document.getElementById('keyword-tags');
+            keywordTags.innerHTML = '';
+            
+            if (result.missing_keywords && result.missing_keywords.length > 0) {
+                result.missing_keywords.forEach(keyword => {
+                    const tag = document.createElement('span');
+                    tag.className = 'keyword-tag';
+                    tag.textContent = keyword;
+                    keywordTags.appendChild(tag);
+                });
+                document.getElementById('keywords-section').style.display = 'block';
+            } else {
+                document.getElementById('keywords-section').style.display = 'none';
+            }
+            
+            // Update summary
+            document.getElementById('profile-summary').textContent = result.profile_summary;
+            
+            // Show results
+            document.getElementById('results-section').style.display = 'block';
+        }
+        
+        function showError(message) {
+            const resultsCard = document.getElementById('results-card');
+            resultsCard.className = 'results-card error';
+            
+            document.getElementById('match-score').textContent = 'Error';
+            document.getElementById('match-score-section').style.display = 'block';
+            document.getElementById('keywords-section').style.display = 'none';
+            document.getElementById('profile-summary').textContent = message;
+            
+            document.getElementById('results-section').style.display = 'block';
+        }
+        
+        // File upload feedback
+        document.getElementById('resume-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const label = document.querySelector('.file-upload-label');
+            
+            if (file) {
+                label.innerHTML = `
+                    <i class="fas fa-file-pdf" style="color: #e74c3c;"></i>
+                    <div>${file.name}</div>
+                    <div style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                        ${(file.size / 1024 / 1024).toFixed(2)} MB
+                    </div>
+                `;
+            }
+        });
+        
+        function toggleDropdown() {
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownContent = document.getElementById('dropdown-content');
+            
+            dropdown.classList.toggle('active');
+            dropdownContent.classList.toggle('show');
+        }
+        
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-btn') && !event.target.closest('.dropdown-btn')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                        document.querySelector('.dropdown').classList.remove('active');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
