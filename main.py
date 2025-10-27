@@ -1,5 +1,5 @@
 import os
-from app import app
+from app_vercel import app
 
 if __name__ == "__main__":
     # Vercel will automatically handle the server setup
