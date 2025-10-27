@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "main.py",
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.9",
+        "maxLambdaSize": "50mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "main.py"
+    }
+  ],
+  "env": {
+    "OPENROUTER_API_KEY": "@openrouter-api-key",
+    "GOOGLE_API_KEY": "@google-api-key",
+    "EMAIL_USERNAME": "@email-username",
+    "EMAIL_PASSWORD": "@email-password"
+  }
+}
